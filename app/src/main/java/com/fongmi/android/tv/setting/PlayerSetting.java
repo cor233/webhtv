@@ -12,6 +12,8 @@ public class PlayerSetting {
     public static final int IJK = 1;
     public static final int RENDER_SURFACE = 0;
     public static final int RENDER_TEXTURE = 1;
+    public static final int PAD_LIVE_FULLSCREEN = 0;
+    public static final int PAD_LIVE_STANDARD = 1;
     private static final int DEFAULT_PLAY_CACHE_OPTION = 0;
 
     public static int getPlayer() {
@@ -42,6 +44,18 @@ public class PlayerSetting {
         Prefers.put("render", value);
         if (isTunnel() && value == RENDER_TEXTURE) Prefers.put("tunnel", false);
         if (isExoEnhanced() && value == RENDER_TEXTURE) Prefers.put("exo_4k_compat", false);
+    }
+
+    public static int getPadLiveMode() {
+        return Prefers.getInt("pad_live_mode", PAD_LIVE_FULLSCREEN) == PAD_LIVE_STANDARD ? PAD_LIVE_STANDARD : PAD_LIVE_FULLSCREEN;
+    }
+
+    public static void putPadLiveMode(int mode) {
+        Prefers.put("pad_live_mode", mode == PAD_LIVE_STANDARD ? PAD_LIVE_STANDARD : PAD_LIVE_FULLSCREEN);
+    }
+
+    public static boolean isPadLiveFullscreen() {
+        return getPadLiveMode() == PAD_LIVE_FULLSCREEN;
     }
 
     public static int getSize() {
@@ -172,6 +186,14 @@ public class PlayerSetting {
         Prefers.put("play_speed", Math.min(Math.max(speed, 0.5f), 5));
     }
 
+    public static float getBrightness() {
+        return Math.min(Math.max(Prefers.getFloat("player_brightness", -1), -1), 1);
+    }
+
+    public static void putBrightness(float brightness) {
+        Prefers.put("player_brightness", Math.min(Math.max(brightness, 0), 1));
+    }
+
     public static boolean isCaption() {
         return Prefers.getBoolean("caption");
     }
@@ -270,6 +292,15 @@ public class PlayerSetting {
         Prefers.put("player_osd_title", value);
     }
 
+    public static boolean isOsdResolution() {
+        String key = "player_osd_resolution";
+        return Prefers.getPrefers().contains(key) ? Prefers.getBoolean(key) : isOsdTitle();
+    }
+
+    public static void putOsdResolution(boolean value) {
+        Prefers.put("player_osd_resolution", value);
+    }
+
     public static boolean isOsdTime() {
         return Prefers.getBoolean("player_osd_time");
     }
@@ -311,6 +342,6 @@ public class PlayerSetting {
     }
 
     public static boolean isOsdEnabled() {
-        return isOsdTitle() || isOsdTime() || isOsdProgress() || isOsdTraffic() || isOsdMini() || isOsdDiagnostics();
+        return isOsdTitle() || isOsdResolution() || isOsdTime() || isOsdProgress() || isOsdTraffic() || isOsdMini() || isOsdDiagnostics();
     }
 }

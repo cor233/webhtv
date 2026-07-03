@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import androidx.media3.ui.danmaku.DanmakuConfig;
 
 import com.fongmi.android.tv.api.config.VodConfig;
+import com.fongmi.android.tv.utils.Util;
 import com.github.catvod.utils.Prefers;
 
 public class DanmakuSetting {
@@ -155,19 +156,20 @@ public class DanmakuSetting {
     }
 
     public static int getMaxOnScreen() {
-        return Prefers.getInt("danmaku_max_on_screen", 150);
+        return Math.max(1, Prefers.getInt("danmaku_max_on_screen", getDefaultMaxOnScreen()));
     }
 
     public static void putMaxOnScreen(int value) {
-        Prefers.put("danmaku_max_on_screen", value);
+        Prefers.put("danmaku_max_on_screen", Math.max(1, value));
     }
 
     public static float getScrollAreaRatio() {
-        return Prefers.getFloat("danmaku_scroll_area_ratio", 0.5f);
+        float value = Prefers.getFloat("danmaku_scroll_area_ratio", getDefaultScrollAreaRatio());
+        return Math.max(0.01f, Math.min(1f, value));
     }
 
     public static void putScrollAreaRatio(float value) {
-        Prefers.put("danmaku_scroll_area_ratio", value);
+        Prefers.put("danmaku_scroll_area_ratio", Math.max(0.01f, Math.min(1f, value)));
     }
 
     public static int getMaxScrollLines() {
@@ -179,19 +181,49 @@ public class DanmakuSetting {
     }
 
     public static int getMaxTopLines() {
-        return Prefers.getInt("danmaku_max_top_lines", 0);
+        return clampFixedLines(Prefers.getInt("danmaku_max_top_lines", 0));
     }
 
     public static void putMaxTopLines(int value) {
-        Prefers.put("danmaku_max_top_lines", value);
+        Prefers.put("danmaku_max_top_lines", clampFixedLines(value));
     }
 
     public static int getMaxBottomLines() {
-        return Prefers.getInt("danmaku_max_bottom_lines", 0);
+        return clampFixedLines(Prefers.getInt("danmaku_max_bottom_lines", 0));
     }
 
     public static void putMaxBottomLines(int value) {
-        Prefers.put("danmaku_max_bottom_lines", value);
+        Prefers.put("danmaku_max_bottom_lines", clampFixedLines(value));
+    }
+
+    public static int getDisplayLines() {
+        int scroll = getMaxScrollLines();
+        if (scroll > 0) return clampDisplayLines(scroll);
+        int legacy = Math.max(getMaxTopLines(), getMaxBottomLines());
+        return legacy > 0 ? clampDisplayLines(legacy) : 3;
+    }
+
+    public static void putDisplayLines(int value) {
+        value = clampDisplayLines(value);
+        putMaxScrollLines(value);
+        putMaxTopLines(value);
+        putMaxBottomLines(value);
+    }
+
+    private static int clampFixedLines(int value) {
+        return Math.max(0, Math.min(5, value));
+    }
+
+    private static int clampDisplayLines(int value) {
+        return Math.max(1, Math.min(5, value));
+    }
+
+    private static int getDefaultMaxOnScreen() {
+        return Util.isLeanback() ? 80 : 150;
+    }
+
+    private static float getDefaultScrollAreaRatio() {
+        return Util.isLeanback() ? 0.42f : 0.5f;
     }
 
     public static float getLineSpacing() {
@@ -315,9 +347,9 @@ public class DanmakuSetting {
     }
 
     public static void resetDensity() {
+        putMaxOnScreen(getDefaultMaxOnScreen());
+        putScrollAreaRatio(getDefaultScrollAreaRatio());
         DanmakuConfig config = DanmakuConfig.DEFAULT;
-        putMaxOnScreen(config.maxOnScreen);
-        putScrollAreaRatio(config.scrollAreaRatio);
         putScrollGapRatio(config.scrollGapRatio);
         putLineSpacing(config.lineSpacing);
         putMaxScrollLines(config.maxScrollLines);
@@ -327,13 +359,9 @@ public class DanmakuSetting {
 
     public static void resetDisplay() {
         DanmakuConfig config = DanmakuConfig.DEFAULT;
-        putShowScroll(config.showScroll);
-        putShowTop(config.showTop);
-        putShowBottom(config.showBottom);
-        putShowReverse(config.showReverse);
-        putShowPositioned(config.showPositioned);
-        putShowSubtitle(config.showSubtitle);
-        putShowSpecial(config.showSpecial);
+        putScrollGapRatio(config.scrollGapRatio);
+        putLineSpacing(config.lineSpacing);
+        putDisplayLines(3);
     }
 
     public static DanmakuConfig getConfig() {
@@ -355,12 +383,12 @@ public class DanmakuSetting {
                 .setScrollAreaRatio(getScrollAreaRatio())
                 .setScrollGapRatio(getScrollGapRatio())
                 .setLineSpacing(getLineSpacing())
-                .setMaxScrollLines(getMaxScrollLines())
-                .setMaxTopLines(getMaxTopLines())
-                .setMaxBottomLines(getMaxBottomLines())
+                .setMaxScrollLines(getDisplayLines())
+                .setMaxTopLines(getDisplayLines())
+                .setMaxBottomLines(0)
                 .setShowScroll(isShowScroll())
                 .setShowTop(isShowTop())
-                .setShowBottom(isShowBottom())
+                .setShowBottom(false)
                 .setShowReverse(isShowReverse())
                 .setShowPositioned(isShowPositioned())
                 .setShowSubtitle(isShowSubtitle())

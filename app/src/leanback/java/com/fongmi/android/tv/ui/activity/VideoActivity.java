@@ -54,6 +54,7 @@ import com.fongmi.android.tv.bean.Track;
 import com.fongmi.android.tv.bean.Vod;
 import com.fongmi.android.tv.databinding.ActivityVideoBinding;
 import com.fongmi.android.tv.db.AppDatabase;
+import com.fongmi.android.tv.event.ConfigEvent;
 import com.fongmi.android.tv.event.RefreshEvent;
 import com.fongmi.android.tv.impl.CustomTarget;
 import com.fongmi.android.tv.model.SiteViewModel;
@@ -469,6 +470,7 @@ public class VideoActivity extends PlaybackActivity implements CustomKeyDownVod.
         mBinding.control.action.player.setOnClickListener(view -> onPlayerKernel());
         mBinding.control.action.player.setOnLongClickListener(view -> onChooseLong());
         mBinding.control.action.decode.setOnClickListener(view -> onDecode());
+        mBinding.control.action.playParams.setOnClickListener(view -> onPlayParams());
         mBinding.control.action.ending.setOnClickListener(view -> onEnding());
         mBinding.control.action.repeat.setOnClickListener(view -> onRepeat());
         mBinding.control.action.change2.setOnClickListener(view -> onChange());
@@ -566,6 +568,7 @@ public class VideoActivity extends PlaybackActivity implements CustomKeyDownVod.
         addActionButton(PlayerButtonSetting.FULLSCREEN, mBinding.control.action.fullscreen);
         addActionButton(PlayerButtonSetting.PLAYER, mBinding.control.action.player);
         addActionButton(PlayerButtonSetting.DECODE, mBinding.control.action.decode);
+        addActionButton(PlayerButtonSetting.PLAY_PARAMS, mBinding.control.action.playParams);
         addActionButton(PlayerButtonSetting.SPEED, mBinding.control.action.speed);
         addActionButton(PlayerButtonSetting.SCALE, mBinding.control.action.scale);
         addActionButton(PlayerButtonSetting.LUT, mBinding.control.action.lut);
@@ -655,8 +658,10 @@ public class VideoActivity extends PlaybackActivity implements CustomKeyDownVod.
         mBinding.scroll.scrollTo(0, 0);
         mClock.setCallback(null);
         updateNavigationKey();
-        player().reset();
-        player().stop();
+        if (service() != null) {
+            player().reset();
+            player().stop();
+        }
         getDetail();
     }
 
@@ -762,11 +767,9 @@ public class VideoActivity extends PlaybackActivity implements CustomKeyDownVod.
         if (result.hasDesc()) mBinding.content.setTag(result.getDesc());
         if (result.hasPosition()) mHistory.setPosition(result.getPosition());
         mBinding.control.parse.setVisibility(isUseParse() ? View.VISIBLE : View.GONE);
+        List<Danmaku> siteDanmakus = result.getDanmaku();
         startPlayer(getHistoryKey(), result, isUseParse(), getSite().getTimeout(), buildMetadata());
-        if (DanmakuApi.canSearch()) DanmakuApi.search(mHistory.getVodName(), getEpisode().getName(), danmaku -> {
-            if (DanmakuSetting.isSpiderFirst() && !result.getDanmaku().isEmpty()) player().addDanmaku(danmaku);
-            else player().setDanmaku(danmaku);
-        });
+        if (DanmakuApi.canAutoSearch(siteDanmakus)) DanmakuApi.search(mHistory.getVodName(), getEpisode().getName(), player()::setDanmaku);
     }
 
     private void recordDetailHealth(Result result, long cost) {
@@ -826,7 +829,7 @@ public class VideoActivity extends PlaybackActivity implements CustomKeyDownVod.
     }
 
     private void seamless(Flag flag) {
-        Episode episode = flag.find(mHistory.getEpisode(), getMark().isEmpty());
+        Episode episode = getMark().isEmpty() ? flag.find(mHistory.getEpisode(), true) : flag.find(mHistory.getVodRemarks(), false);
         setQualityVisible(episode != null && episode.isSelected() && mQualityAdapter.getItemCount() > 1);
         if (episode == null || episode.isSelected()) return;
         selectEpisode(episode, false);
@@ -1108,6 +1111,19 @@ public class VideoActivity extends PlaybackActivity implements CustomKeyDownVod.
     private void onRepeat() {
         player().setRepeatOne(!player().isRepeatOne());
         mBinding.control.action.repeat.setSelected(player().isRepeatOne());
+    }
+
+    private void onPlayParams() {
+        if (mOsd == null) return;
+        boolean visible = !mOsd.isDiagnosticsVisible();
+        PlayerSetting.putOsdDiagnostics(visible);
+        mOsd.setDiagnosticsVisible(visible);
+        setPlayParamsState();
+        hideControl();
+    }
+
+    private void setPlayParamsState() {
+        mBinding.control.action.playParams.setSelected(mOsd != null && mOsd.isDiagnosticsVisible());
     }
 
     @Override
@@ -1455,6 +1471,7 @@ public class VideoActivity extends PlaybackActivity implements CustomKeyDownVod.
 
     private void showControl(View view) {
         showTopInfo();
+        setPlayParamsState();
         mBinding.control.getRoot().setVisibility(View.VISIBLE);
         if (mOsd != null) mOsd.setControlsVisible(true);
         view.requestFocus();
@@ -1882,7 +1899,13 @@ public class VideoActivity extends PlaybackActivity implements CustomKeyDownVod.
         else if (event.getType() == RefreshEvent.Type.PLAYER) onRefresh();
         else if (event.getType() == RefreshEvent.Type.VOD) updateVod(event.getVod());
         else if (event.getType() == RefreshEvent.Type.SUBTITLE) player().setSub(Sub.from(event.getPath()));
-        else if (event.getType() == RefreshEvent.Type.DANMAKU) player().setDanmaku(Danmaku.from(event.getPath()));
+        else if (event.getType() == RefreshEvent.Type.DANMAKU) player().reloadDanmaku(Danmaku.from(event.getPath()));
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onConfigEvent(ConfigEvent event) {
+        if (isRedirect() || !event.isVod() || mParseAdapter == null) return;
+        mParseAdapter.addAll(VodConfig.get().getParses());
     }
 
     private void setPosition() {
@@ -2355,6 +2378,7 @@ public class VideoActivity extends PlaybackActivity implements CustomKeyDownVod.
         mClock.stop().start();
         if (mOsd != null) {
             mOsd.setDiagnosticsVisible(PlayerSetting.isOsdDiagnostics());
+            setPlayParamsState();
             mOsd.start();
         }
     }

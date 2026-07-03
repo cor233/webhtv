@@ -24,6 +24,9 @@
     <string name="keep">收藏</string>
     <string name="keep_add">已加入收藏</string>
     <string name="keep_del">已取消收藏</string>
+    <string name="exit_confirm_title">確定退出應用？</string>
+    <string name="exit_confirm_message">目前頁面將關閉；如果正在播放，會繼續留在後台。</string>
+    <string name="exit_confirm_positive">確認退出</string>
 
     <!-- Play -->
     <string name="play">播放</string>
@@ -40,6 +43,7 @@
     <string name="play_speed">1.00</string>
     <string name="play_reset">刷新</string>
     <string name="play_decode">硬解</string>
+    <string name="play_params">播放參數</string>
     <string name="play_timer">定時</string>
     <string name="play_title">章節</string>
     <string name="play_scale">原始</string>
@@ -99,6 +103,14 @@
     <string name="danmaku_max_scroll_lines">最大滾動行數</string>
     <string name="danmaku_max_top_lines">最大頂部行數</string>
     <string name="danmaku_max_bottom_lines">最大底部行數</string>
+    <string name="danmaku_top_rows">頂部行數</string>
+    <string name="danmaku_bottom_rows">底部行數</string>
+    <string name="danmaku_display_rows">顯示行數</string>
+    <string name="danmaku_rows_1">1行</string>
+    <string name="danmaku_rows_2">2行</string>
+    <string name="danmaku_rows_3">3行</string>
+    <string name="danmaku_rows_4">4行</string>
+    <string name="danmaku_rows_5">5行</string>
     <string name="danmaku_line_spacing">垂直間距</string>
     <string name="danmaku_scroll_gap_ratio">水平間距</string>
     <string name="danmaku_show_scroll">滾動彈幕</string>
@@ -545,6 +557,7 @@
     <string name="setting_custom_csp_extensions_toggle">擴展</string>
     <string name="setting_custom_csp_extensions">擴展 URL / JSON</string>
     <string name="setting_custom_csp_extensions_file">檔案</string>
+    <string name="setting_custom_csp_files">檔案</string>
     <string name="setting_custom_csp_extensions_example">https://example.com/site.js</string>
     <string name="setting_custom_csp_extensions_invalid">extensions JSON 格式無效</string>
     <string name="setting_custom_csp_permission_required">站點注入需要檔案存取權限。</string>
@@ -617,6 +630,7 @@
     <string name="setting_theme_color">主題色彩</string>
     <string name="setting_auto">自動</string>
     <string name="setting_custom">自訂</string>
+    <string name="setting_language">語言</string>
     <string name="setting_size">圖片尺寸</string>
     <string name="setting_ui_scale">介面大小</string>
     <string name="setting_doh">DoH</string>
@@ -753,6 +767,7 @@
     <string name="player_render">渲染方式</string>
     <string name="player_button_config">播放器按鈕</string>
     <string name="player_button_config_summary">顯示 %1$d/%2$d</string>
+    <string name="player_pad_live">平板直播</string>
     <string name="player_button_up">上移</string>
     <string name="player_button_down">下移</string>
     <string name="play_episodes">選集</string>
@@ -764,6 +779,7 @@
     <string name="player_caption">字幕樣式</string>
     <string name="player_background">背景播放</string>
     <string name="player_audio_decode">音訊軟解</string>
+    <string name="player_audio_passthrough">音訊直通</string>
     <string name="player_video_decode">視訊軟解</string>
     <string name="player_aac_track">AAC優先</string>
     <string name="player_adblock">智慧去廣</string>
@@ -974,6 +990,12 @@
         <item>更小</item>
     </string-array>
 
+    <string-array name="select_language">
+        <item>跟隨系統</item>
+        <item>簡體中文</item>
+        <item>繁體中文</item>
+    </string-array>
+
     <string-array name="select_scale">
         <item>原始</item>
         <item>16:9</item>
@@ -994,6 +1016,7 @@
 
     <string-array name="select_player_osd">
         <item>標題</item>
+        <item>解析度</item>
         <item>時間</item>
         <item>進度</item>
         <item>網速</item>

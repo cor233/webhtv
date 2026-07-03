@@ -24,6 +24,7 @@ import com.fongmi.android.tv.ui.base.BaseFragment;
 import com.fongmi.android.tv.ui.dialog.BufferDialog;
 import com.fongmi.android.tv.ui.dialog.LutDialog;
 import com.fongmi.android.tv.ui.dialog.PlayerButtonConfigDialog;
+import com.fongmi.android.tv.ui.dialog.PlayerOsdDialog;
 import com.fongmi.android.tv.ui.dialog.SpeedDialog;
 import com.fongmi.android.tv.ui.dialog.UaDialog;
 import com.fongmi.android.tv.utils.FileUtil;
@@ -41,6 +42,7 @@ public class SettingPlayerFragment extends BaseFragment implements UaListener, B
     private String[] bufferBytes;
     private String[] caption;
     private String[] kernel;
+    private String[] padLiveMode;
     private String[] playCache;
     private String[] render;
     private String[] scale;
@@ -66,6 +68,7 @@ public class SettingPlayerFragment extends BaseFragment implements UaListener, B
         mBinding.aacText.setText(getSwitch(PlayerSetting.isPreferAAC()));
         mBinding.tunnelText.setText(getSwitch(PlayerSetting.isTunnel()));
         mBinding.exo4kCompatText.setText(getSwitch(PlayerSetting.isExoEnhanced()));
+        setPadLiveModeText();
         setPlayerButtonsText();
         mBinding.adblockText.setText(getSwitch(Setting.isAdblock()));
         mBinding.speedText.setText(format.format(PlayerSetting.getSpeed()));
@@ -76,6 +79,7 @@ public class SettingPlayerFragment extends BaseFragment implements UaListener, B
         setPreloadText();
         mBinding.autoChangeText.setText(getSwitch(PlayerSetting.isAutoChange()));
         mBinding.audioDecodeText.setText(getSwitch(PlayerSetting.isAudioPrefer()));
+        mBinding.audioPassThroughText.setText(getSwitch(PlayerSetting.isAudioPassThrough()));
         mBinding.videoDecodeText.setText(getSwitch(PlayerSetting.isVideoPrefer()));
         mBinding.caption.setVisibility(PlayerSetting.hasCaption() ? View.VISIBLE : View.GONE);
         mBinding.osdText.setText(getOsdText(osd = ResUtil.getStringArray(R.array.select_player_osd)));
@@ -96,6 +100,7 @@ public class SettingPlayerFragment extends BaseFragment implements UaListener, B
         mBinding.lut.setOnClickListener(this::onLut);
         mBinding.osd.setOnClickListener(this::onOsd);
         mBinding.playerButtons.setOnClickListener(view -> PlayerButtonConfigDialog.show(this, this::setPlayerButtonsText));
+        mBinding.padLive.setOnClickListener(this::setPadLiveMode);
         mBinding.speed.setOnClickListener(this::onSpeed);
         mBinding.buffer.setOnClickListener(this::onBuffer);
         mBinding.bufferBytes.setOnClickListener(this::onBufferBytes);
@@ -114,6 +119,7 @@ public class SettingPlayerFragment extends BaseFragment implements UaListener, B
         mBinding.caption.setOnLongClickListener(this::onCaption);
         mBinding.background.setOnClickListener(this::onBackground);
         mBinding.audioDecode.setOnClickListener(this::setAudioDecode);
+        mBinding.audioPassThrough.setOnClickListener(this::setAudioPassThrough);
         mBinding.videoDecode.setOnClickListener(this::setVideoDecode);
     }
 
@@ -153,28 +159,39 @@ public class SettingPlayerFragment extends BaseFragment implements UaListener, B
     }
 
     private void onOsd(View view) {
-        boolean[] checked = getOsdChecked();
-        new MaterialAlertDialogBuilder(requireActivity()).setTitle(R.string.player_osd).setNegativeButton(R.string.dialog_negative, null).setPositiveButton(R.string.dialog_positive, (dialog, which) -> {
+        PlayerOsdDialog.show(this, osd, getOsdChecked(), checked -> {
             setOsdChecked(checked);
             mBinding.osdText.setText(getOsdText(osd));
-        }).setMultiChoiceItems(osd, checked, (dialog, which, isChecked) -> checked[which] = isChecked).show();
+        });
     }
 
     private void setPlayerButtonsText() {
         mBinding.playerButtonsText.setText(getString(R.string.player_button_config_summary, PlayerButtonSetting.getVisibleCount(), PlayerButtonSetting.getTotalCount()));
     }
 
+    private void setPadLiveModeText() {
+        mBinding.padLive.setVisibility(ResUtil.isPad() ? View.VISIBLE : View.GONE);
+        mBinding.padLiveText.setText((padLiveMode = ResUtil.getStringArray(R.array.select_pad_live_mode))[PlayerSetting.getPadLiveMode()]);
+    }
+
+    private void setPadLiveMode(View view) {
+        int index = (PlayerSetting.getPadLiveMode() + 1) % padLiveMode.length;
+        PlayerSetting.putPadLiveMode(index);
+        mBinding.padLiveText.setText(padLiveMode[index]);
+    }
+
     private boolean[] getOsdChecked() {
-        return new boolean[]{PlayerSetting.isOsdTitle(), PlayerSetting.isOsdTime(), PlayerSetting.isOsdProgress(), PlayerSetting.isOsdTraffic(), PlayerSetting.isOsdMini(), PlayerSetting.isOsdDiagnostics()};
+        return new boolean[]{PlayerSetting.isOsdTitle(), PlayerSetting.isOsdResolution(), PlayerSetting.isOsdTime(), PlayerSetting.isOsdProgress(), PlayerSetting.isOsdTraffic(), PlayerSetting.isOsdMini(), PlayerSetting.isOsdDiagnostics()};
     }
 
     private void setOsdChecked(boolean[] checked) {
         PlayerSetting.putOsdTitle(checked[0]);
-        PlayerSetting.putOsdTime(checked[1]);
-        PlayerSetting.putOsdProgress(checked[2]);
-        PlayerSetting.putOsdTraffic(checked[3]);
-        PlayerSetting.putOsdMini(checked[4]);
-        PlayerSetting.putOsdDiagnostics(checked[5]);
+        PlayerSetting.putOsdResolution(checked[1]);
+        PlayerSetting.putOsdTime(checked[2]);
+        PlayerSetting.putOsdProgress(checked[3]);
+        PlayerSetting.putOsdTraffic(checked[4]);
+        PlayerSetting.putOsdMini(checked[5]);
+        PlayerSetting.putOsdDiagnostics(checked[6]);
     }
 
     private String getOsdText(String[] items) {
@@ -360,6 +377,11 @@ public class SettingPlayerFragment extends BaseFragment implements UaListener, B
     private void setAudioDecode(View view) {
         PlayerSetting.putAudioPrefer(!PlayerSetting.isAudioPrefer());
         mBinding.audioDecodeText.setText(getSwitch(PlayerSetting.isAudioPrefer()));
+    }
+
+    private void setAudioPassThrough(View view) {
+        PlayerSetting.putAudioPassThrough(!PlayerSetting.isAudioPassThrough());
+        mBinding.audioPassThroughText.setText(getSwitch(PlayerSetting.isAudioPassThrough()));
     }
 
     private void setVideoDecode(View view) {

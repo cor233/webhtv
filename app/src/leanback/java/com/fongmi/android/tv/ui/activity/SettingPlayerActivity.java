@@ -21,12 +21,12 @@ import com.fongmi.android.tv.setting.Setting;
 import com.fongmi.android.tv.ui.base.BaseActivity;
 import com.fongmi.android.tv.ui.dialog.BufferDialog;
 import com.fongmi.android.tv.ui.dialog.LutDialog;
+import com.fongmi.android.tv.ui.dialog.PlayerOsdDialog;
 import com.fongmi.android.tv.ui.dialog.PlayerButtonConfigDialog;
 import com.fongmi.android.tv.ui.dialog.SpeedDialog;
 import com.fongmi.android.tv.ui.dialog.UaDialog;
 import com.fongmi.android.tv.utils.FileUtil;
 import com.fongmi.android.tv.utils.ResUtil;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.text.DecimalFormat;
 
@@ -76,6 +76,7 @@ public class SettingPlayerActivity extends BaseActivity implements UaListener, B
         mBinding.autoChangeText.setText(getSwitch(PlayerSetting.isAutoChange()));
         mBinding.backgroundText.setText(getSwitch(PlayerSetting.isBackgroundOn()));
         mBinding.audioDecodeText.setText(getSwitch(PlayerSetting.isAudioPrefer()));
+        mBinding.audioPassThroughText.setText(getSwitch(PlayerSetting.isAudioPassThrough()));
         mBinding.videoDecodeText.setText(getSwitch(PlayerSetting.isVideoPrefer()));
         mBinding.osdText.setText(getOsdText(osd = ResUtil.getStringArray(R.array.select_player_osd)));
         mBinding.kernelText.setText((kernel = ResUtil.getStringArray(R.array.select_player_kernel))[PlayerSetting.getPlayer()]);
@@ -112,6 +113,7 @@ public class SettingPlayerActivity extends BaseActivity implements UaListener, B
         mBinding.caption.setOnLongClickListener(this::onCaption);
         mBinding.background.setOnClickListener(this::onBackground);
         mBinding.audioDecode.setOnClickListener(this::setAudioDecode);
+        mBinding.audioPassThrough.setOnClickListener(this::setAudioPassThrough);
         mBinding.videoDecode.setOnClickListener(this::setVideoDecode);
     }
 
@@ -152,11 +154,10 @@ public class SettingPlayerActivity extends BaseActivity implements UaListener, B
     }
 
     private void onOsd(View view) {
-        boolean[] checked = getOsdChecked();
-        new MaterialAlertDialogBuilder(this).setTitle(R.string.player_osd).setNegativeButton(R.string.dialog_negative, null).setPositiveButton(R.string.dialog_positive, (dialog, which) -> {
+        PlayerOsdDialog.show(this, osd, getOsdChecked(), checked -> {
             setOsdChecked(checked);
             mBinding.osdText.setText(getOsdText(osd));
-        }).setMultiChoiceItems(osd, checked, (dialog, which, isChecked) -> checked[which] = isChecked).show();
+        });
     }
 
     private void setPlayerButtonsText() {
@@ -164,16 +165,17 @@ public class SettingPlayerActivity extends BaseActivity implements UaListener, B
     }
 
     private boolean[] getOsdChecked() {
-        return new boolean[]{PlayerSetting.isOsdTitle(), PlayerSetting.isOsdTime(), PlayerSetting.isOsdProgress(), PlayerSetting.isOsdTraffic(), PlayerSetting.isOsdMini(), PlayerSetting.isOsdDiagnostics()};
+        return new boolean[]{PlayerSetting.isOsdTitle(), PlayerSetting.isOsdResolution(), PlayerSetting.isOsdTime(), PlayerSetting.isOsdProgress(), PlayerSetting.isOsdTraffic(), PlayerSetting.isOsdMini(), PlayerSetting.isOsdDiagnostics()};
     }
 
     private void setOsdChecked(boolean[] checked) {
         PlayerSetting.putOsdTitle(checked[0]);
-        PlayerSetting.putOsdTime(checked[1]);
-        PlayerSetting.putOsdProgress(checked[2]);
-        PlayerSetting.putOsdTraffic(checked[3]);
-        PlayerSetting.putOsdMini(checked[4]);
-        PlayerSetting.putOsdDiagnostics(checked[5]);
+        PlayerSetting.putOsdResolution(checked[1]);
+        PlayerSetting.putOsdTime(checked[2]);
+        PlayerSetting.putOsdProgress(checked[3]);
+        PlayerSetting.putOsdTraffic(checked[4]);
+        PlayerSetting.putOsdMini(checked[5]);
+        PlayerSetting.putOsdDiagnostics(checked[6]);
     }
 
     private String getOsdText(String[] items) {
@@ -305,6 +307,11 @@ public class SettingPlayerActivity extends BaseActivity implements UaListener, B
     private void setAudioDecode(View view) {
         PlayerSetting.putAudioPrefer(!PlayerSetting.isAudioPrefer());
         mBinding.audioDecodeText.setText(getSwitch(PlayerSetting.isAudioPrefer()));
+    }
+
+    private void setAudioPassThrough(View view) {
+        PlayerSetting.putAudioPassThrough(!PlayerSetting.isAudioPassThrough());
+        mBinding.audioPassThroughText.setText(getSwitch(PlayerSetting.isAudioPassThrough()));
     }
 
     private void setVideoDecode(View view) {

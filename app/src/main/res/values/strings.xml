@@ -25,6 +25,9 @@
     <string name="keep">Keep</string>
     <string name="keep_add">Added</string>
     <string name="keep_del">Removed</string>
+    <string name="exit_confirm_title">Exit app?</string>
+    <string name="exit_confirm_message">The current page will close. Background playback will continue if it is running.</string>
+    <string name="exit_confirm_positive">Exit</string>
 
     <!-- Play -->
     <string name="play">Play</string>
@@ -41,6 +44,7 @@
     <string name="play_speed">1.00</string>
     <string name="play_reset">Reset</string>
     <string name="play_decode">Hard</string>
+    <string name="play_params">Playback params</string>
     <string name="play_timer">Timer</string>
     <string name="play_title">Chapter</string>
     <string name="play_scale">Default</string>
@@ -100,6 +104,14 @@
     <string name="danmaku_max_scroll_lines">Max scroll rows</string>
     <string name="danmaku_max_top_lines">Max top rows</string>
     <string name="danmaku_max_bottom_lines">Max bottom rows</string>
+    <string name="danmaku_top_rows">Top rows</string>
+    <string name="danmaku_bottom_rows">Bottom rows</string>
+    <string name="danmaku_display_rows">Display rows</string>
+    <string name="danmaku_rows_1">1 row</string>
+    <string name="danmaku_rows_2">2 rows</string>
+    <string name="danmaku_rows_3">3 rows</string>
+    <string name="danmaku_rows_4">4 rows</string>
+    <string name="danmaku_rows_5">5 rows</string>
     <string name="danmaku_line_spacing">Line gap</string>
     <string name="danmaku_scroll_gap_ratio">Row gap</string>
     <string name="danmaku_show_scroll">Scrolling</string>
@@ -558,6 +570,7 @@
     <string name="setting_custom_csp_extensions_toggle">Extensions</string>
     <string name="setting_custom_csp_extensions">Extension URL / JSON</string>
     <string name="setting_custom_csp_extensions_file">File</string>
+    <string name="setting_custom_csp_files">Files</string>
     <string name="setting_custom_csp_extensions_example">https://example.com/site.js</string>
     <string name="setting_custom_csp_extensions_invalid">Invalid extensions JSON</string>
     <string name="setting_custom_csp_permission_required">Site injection needs file access permission.</string>
@@ -635,6 +648,7 @@
     <string name="setting_theme_color">Theme color</string>
     <string name="setting_auto">Auto</string>
     <string name="setting_custom">Custom</string>
+    <string name="setting_language">Language</string>
     <string name="setting_size">Image size</string>
     <string name="setting_ui_scale">Interface size</string>
     <string name="setting_doh">DoH</string>
@@ -771,6 +785,7 @@
     <string name="player_render">Render</string>
     <string name="player_button_config">Player buttons</string>
     <string name="player_button_config_summary">%1$d/%2$d shown</string>
+    <string name="player_pad_live">Tablet live</string>
     <string name="player_button_up">Up</string>
     <string name="player_button_down">Down</string>
     <string name="play_episodes">Episodes</string>
@@ -782,6 +797,7 @@
     <string name="player_caption">Caption style</string>
     <string name="player_background">Background play</string>
     <string name="player_audio_decode">Audio software decode</string>
+    <string name="player_audio_passthrough">Audio passthrough</string>
     <string name="player_video_decode">Video software decode</string>
     <string name="player_aac_track">Prefer aac track</string>
     <string name="player_adblock">Remove ads</string>
@@ -998,6 +1014,12 @@
         <item>Smaller</item>
     </string-array>
 
+    <string-array name="select_language">
+        <item>Follow system</item>
+        <item>Simplified Chinese</item>
+        <item>Traditional Chinese</item>
+    </string-array>
+
     <string-array name="select_scale">
         <item>Default</item>
         <item>16:9</item>
@@ -1018,6 +1040,7 @@
 
     <string-array name="select_player_osd">
         <item>Title</item>
+        <item>Resolution</item>
         <item>Clock</item>
         <item>Progress</item>
         <item>Network speed</item>
