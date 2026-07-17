@@ -44,6 +44,14 @@
     <string name="play_reset">刷新</string>
     <string name="play_decode">硬解</string>
     <string name="play_params">播放參數</string>
+    <string name="codec_capability_short">硬解能力</string>
+    <string name="codec_capability_title">硬解能力</string>
+    <string name="codec_capability_search">搜尋 codec、mime、decoder、解析度、音訊...</string>
+    <string name="codec_capability_current">目前媒體</string>
+    <string name="codec_capability_all">全部</string>
+    <string name="codec_capability_video">影片</string>
+    <string name="codec_capability_audio">音訊</string>
+    <string name="codec_capability_copy">複製</string>
     <string name="play_timer">定時</string>
     <string name="play_title">章節</string>
     <string name="play_scale">原始</string>
@@ -62,6 +70,9 @@
     <string name="play_track_audio">音軌</string>
     <string name="play_track_video">視軌</string>
     <string name="play_track_disable_subtitle">關閉字幕</string>
+    <string name="play_track_disable_secondary_subtitle">關閉第二字幕</string>
+    <string name="play_track_secondary_subtitle">第二字幕</string>
+    <string name="play_track_primary_subtitle">主字幕</string>
     <string name="offset_text">字幕偏移</string>
     <string name="offset_audio">音軌偏移</string>
     <string name="offset_setting">偏移設定</string>
@@ -138,6 +149,7 @@
     <string name="setting_vod">點播</string>
     <string name="setting_live">直播</string>
     <string name="setting_wall">壁紙</string>
+    <string name="setting_config_dialog_title">%1$s%2$s</string>
     <string name="setting_builtin_wall">內置壁紙</string>
     <string name="setting_player">播放設定</string>
     <string name="setting_danmaku">彈幕設定</string>
@@ -361,7 +373,13 @@
     <string name="site_health_clear_done">站點健康記錄已清空</string>
     <string name="setting_web_home_extension">WebHome 擴展</string>
     <string name="setting_web_home_fullscreen">WebHome 主頁全屏</string>
-    <string name="setting_csp_warmup">CSP init 預熱</string>
+    <string name="setting_csp_warmup">CSP預熱</string>
+    <string name="setting_csp_warmup_default">預設</string>
+    <string name="setting_csp_warmup_custom">自訂</string>
+    <string name="setting_csp_warmup_custom_count">自訂 · %1$d 個</string>
+    <string name="setting_csp_warmup_select_site">選擇 CSP 站點</string>
+    <string name="setting_csp_warmup_no_site">沒有可用的 Jar CSP 站點</string>
+    <string name="setting_csp_warmup_select_required">請至少選擇一個 CSP 站點</string>
     <string name="setting_playback_artwork_wall">播放介面劇照</string>
     <string name="setting_viewing_record_sync">觀影記錄同步</string>
     <string name="viewing_record_sync_entry_summary">%1$s · 遠端 %2$d/%3$d · Webhook %4$d/%5$d</string>
@@ -771,10 +789,77 @@
     <string name="player_button_up">上移</string>
     <string name="player_button_down">下移</string>
     <string name="play_episodes">選集</string>
-    <string name="player_exo_4k_compat">EXO增強模式</string>
+    <string name="player_exo_4k_compat">播放效能</string>
+    <string name="player_immersive_audio_mode">沉浸音訊模式</string>
+    <string name="player_performance">播放效能</string>
+    <string name="player_performance_recommended">推薦</string>
+    <string name="player_performance_compatible">相容</string>
+    <string name="player_performance_lightweight">輕量</string>
+    <string name="player_performance_help">說明</string>
+    <string name="player_performance_help_title">播放效能參數說明</string>
+    <string name="player_performance_help_close">關閉</string>
     <string name="player_kernel">播放器內核</string>
     <string name="player_scale">縮放比例</string>
     <string name="player_lut">LUT 調色</string>
+    <string name="player_mpv_config">MPV 設定管理</string>
+    <string name="player_mpv_render">MPV 渲染後端</string>
+    <string name="mpv_render_native_unavailable">目前不可用</string>
+    <string name="mpv_config_target">%1$s · %2$s</string>
+    <string name="mpv_config_default">預設</string>
+    <string name="mpv_config_local">本機 mpv.conf</string>
+    <string name="mpv_config_url">URL mpv.conf</string>
+    <string name="mpv_config_name_hint">名稱（可選）</string>
+    <string name="mpv_config_history">歷史</string>
+    <string name="mpv_config_history_empty">暫無 MPV 設定歷史</string>
+    <string name="mpv_config_script_hint">腳本 URL 或選擇本機腳本</string>
+    <string name="mpv_config_scripts_count">%1$d 個腳本</string>
+    <string name="mpv_config_saved">MPV 設定已儲存，重新進入播放後生效</string>
+    <string name="mpv_config_empty">MPV 設定為空</string>
+    <string name="mpv_config_file_invalid">mpv.conf 檔案無效</string>
+    <string name="mpv_config_url_invalid">mpv.conf URL 無效</string>
+    <string name="mpv_config_download_empty">下載到的 mpv.conf 為空</string>
+    <string name="mpv_config_new">新增</string>
+    <string name="mpv_config_in_use">使用中</string>
+    <string name="mpv_config_more">更多操作</string>
+    <string name="mpv_config_edit">編輯</string>
+    <string name="mpv_config_rename">重新命名</string>
+    <string name="mpv_config_rename_title">重新命名設定</string>
+    <string name="mpv_config_new_name">新名稱</string>
+    <string name="mpv_config_renamed">設定已重新命名</string>
+    <string name="mpv_config_delete">刪除</string>
+    <string name="mpv_config_delete_title">刪除設定</string>
+    <string name="mpv_config_delete_message">確定刪除「%1$s」嗎？此操作無法復原。</string>
+    <string name="mpv_config_create_title">新增設定</string>
+    <string name="mpv_config_create_desc">選擇一種方式開始；名稱可以留空，系統會自動產生。</string>
+    <string name="mpv_config_done">完成</string>
+    <string name="mpv_config_name">名稱</string>
+    <string name="mpv_config_name_optional">名稱（選填）</string>
+    <string name="mpv_config_name_example">例如：4K 播放最佳化</string>
+    <string name="mpv_config_name_required">請輸入設定名稱</string>
+    <string name="mpv_config_method">設定方式</string>
+    <string name="mpv_config_choose_action">選擇建立方式</string>
+    <string name="mpv_config_text_edit">新增文字設定</string>
+    <string name="mpv_config_text_edit_desc">開啟編輯器，輸入並儲存設定內容</string>
+    <string name="mpv_config_import_file">匯入設定檔</string>
+    <string name="mpv_config_import_file_desc">從本機選擇已有設定檔</string>
+    <string name="mpv_config_editor_new">新增設定</string>
+    <string name="mpv_config_editor_edit">編輯設定</string>
+    <string name="mpv_config_save">儲存</string>
+    <string name="mpv_config_encoding">編碼  UTF-8</string>
+    <string name="mpv_config_stats">行數：%1$d    字元數：%2$d</string>
+    <string name="mpv_config_no_profiles">暫無設定，點選「新增」建立或匯入設定。</string>
+    <string name="mpv_config_profile_missing">設定檔已不存在</string>
+    <string name="mpv_config_profile_saved">設定已儲存</string>
+    <string name="mpv_config_switched">已切換為「%1$s」，重新進入播放後生效</string>
+    <string name="mpv_config_text">文字設定</string>
+    <string name="mpv_config_untitled">未命名設定</string>
+    <string name="mpv_config_too_large">設定文字不能超過 1 MB</string>
+    <string name="mpv_config_write_failed">無法寫入 MPV 設定檔</string>
+    <string name="mpv_config_script_exists">同名腳本已存在</string>
+    <string name="mpv_config_default_copy">預設設定副本</string>
+    <string name="mpv_config_current">目前使用：%1$s</string>
+    <string name="mpv_config_apply_selected">套用所選</string>
+    <string name="mpv_config_close">關閉</string>
     <string name="player_libass">字幕渲染</string>
     <string name="player_caption">字幕樣式</string>
     <string name="player_background">背景播放</string>
@@ -794,6 +879,7 @@
     <string name="player_preload_size">預載容量</string>
     <string name="player_preload_time">預載時間</string>
     <string name="player_preload_time_value">%1$d 秒</string>
+    <string name="player_auto_play">自動播放</string>
     <string name="player_auto_change">自動換源</string>
     <string name="player_speed">長按倍速</string>
     <string name="player_ua">User-Agent</string>
@@ -867,6 +953,15 @@
     <string name="error_play_parse">播放網址解析失敗</string>
     <string name="error_play_drm">本設備不支援所需的 DRM scheme</string>
     <string name="error_play_url">播放網址載入失敗</string>
+    <string name="error_play_mpv_hls_unsupported">MPV 播放此 HLS 失敗，請手動切換播放器或更換線路</string>
+    <string name="error_play_mpv_load_failed">MPV 載入媒體失敗，請檢查網路或更換線路</string>
+    <string name="error_play_mpv_network_failed">MPV 網路載入失敗，請檢查網路、請求頭或更換線路</string>
+    <string name="error_play_mpv_drm_unsupported">MPV 不支援此 DRM 保護媒體，請手動切換播放器或更換線路</string>
+    <string name="error_play_mpv_unexpected_image">MPV 載入到了圖片而不是影片，請更換線路</string>
+    <string name="error_play_mpv_no_av">MPV 沒有讀取到可播放的音視訊資料</string>
+    <string name="error_play_mpv_invalid_data">MPV 識別到異常媒體資料，請更換線路或手動切換播放器</string>
+    <string name="error_play_mpv_decode_failed">MPV 解碼失敗，請嘗試切換軟硬解或更換線路</string>
+    <string name="error_play_mpv_video_output">MPV 視訊輸出初始化失敗，請嘗試切換解碼或重新進入播放</string>
     <string name="error_play_flag">暫無線路資料</string>
     <string name="error_play_timeout">連線逾時</string>
     <string name="error_play_tvbus">錯誤代碼：<xliff:g name="name">%s</xliff:g></string>
@@ -953,6 +1048,11 @@
     <string-array name="select_player_kernel">
         <item>EXO</item>
         <item>IJK</item>
+        <item>MPV</item>
+    </string-array>
+    <string-array name="select_mpv_render">
+        <item>OpenGL</item>
+        <item>Vulkan</item>
     </string-array>
     <string-array name="select_buffer_bytes">
         <item>自動</item>
@@ -1029,5 +1129,197 @@
         <item>選擇視軌</item>
         <item>選擇字幕</item>
     </string-array>
+    <string name="select_secondary_subtitle_track">選擇第二字幕</string>
 
+    <string name="player_karaoke_status_free">K歌 · 自由唱</string>
+    <string name="player_karaoke_status_free_score_grade">K歌 · 娛樂 %1$d 分 · %2$s</string>
+    <string name="player_karaoke_status_score">K歌 · %1$d 分</string>
+    <string name="player_karaoke_status_score_grade">K歌 · %1$d 分 · %2$s</string>
+    <string name="player_karaoke_status_rhythm_score">K歌 · 節奏 %1$d 分</string>
+    <string name="player_karaoke_status_rhythm_score_grade">K歌 · 節奏 %1$d 分 · %2$s</string>
+    <string name="player_karaoke_need_permission">需要麥克風權限</string>
+    <string name="player_karaoke_mic_unavailable">麥克風不可用</string>
+    <string name="player_karaoke_no_voice">請靠近麥克風演唱</string>
+    <string name="player_karaoke_pitch">音高 %1$s</string>
+    <string name="player_karaoke_pitch_score">音高 %1$s · %2$s</string>
+    <string name="player_karaoke_pitch_hit">命中</string>
+    <string name="player_karaoke_pitch_perfect">完美</string>
+    <string name="player_karaoke_pitch_vibrato">顫音</string>
+    <string name="player_karaoke_pitch_miss">偏差 %1$.1f 半音</string>
+    <string name="player_karaoke_free_detail">音高 %1$s · 參與 %2$d%%</string>
+    <string name="player_karaoke_rhythm_detail">節奏命中 %1$d%%</string>
+    <string name="player_karaoke_combo">連擊 %1$d 秒</string>
+    <string name="player_karaoke_line_score">本句 %1$d 分</string>
+    <string name="player_karaoke_result_title">K歌結果</string>
+    <string name="player_karaoke_result_scoring">音準評分</string>
+    <string name="player_karaoke_result_rhythm">節奏評分</string>
+    <string name="player_karaoke_result_free">自由唱</string>
+    <string name="player_karaoke_result_track">評分譜：%1$s</string>
+    <string name="player_karaoke_result_no_track">未綁定評分譜，目前是自由唱娛樂估算。</string>
+    <string name="player_karaoke_result_rhythm_note">根據歌詞時間軸自動生成，不判斷真實音高。</string>
+    <string name="player_karaoke_result_metric_hit">命中率</string>
+    <string name="player_karaoke_result_metric_rhythm">節奏命中</string>
+    <string name="player_karaoke_result_metric_participation">參與度</string>
+    <string name="player_karaoke_result_score_value">%1$d 分 · %2$s</string>
+    <string name="player_karaoke_result_voice_coverage">演唱覆蓋</string>
+    <string name="player_karaoke_result_bonus">表現加成</string>
+    <string name="player_karaoke_result_perfect">完美命中</string>
+    <string name="player_karaoke_result_vibrato">顫音獎勵</string>
+    <string name="player_karaoke_result_active_time">有效 %1$d 秒</string>
+    <string name="player_karaoke_result_best_combo">連擊 %1$d 秒</string>
+    <string name="player_karaoke_result_line_average">逐句平均</string>
+    <string name="player_karaoke_result_line_summary">逐句 %1$d 句 · 最佳 %2$d%%</string>
+    <string name="player_karaoke_result_pitch_headline_high">音準和穩定度都不錯，表現很完整。</string>
+    <string name="player_karaoke_result_pitch_headline_mid">這次表現可以，音高再穩一點分數會更好。</string>
+    <string name="player_karaoke_result_pitch_headline_low">先把每句開頭唱穩，並盡量完整唱完。</string>
+    <string name="player_karaoke_result_no_track_short">自由唱估算</string>
+    <string name="player_karaoke_result_rhythm_note_short">歌詞節奏評分</string>
+    <string name="player_karaoke_result_pitch_headline_high_short">表現完整</string>
+    <string name="player_karaoke_result_pitch_headline_mid_short">音高再穩一點</string>
+    <string name="player_karaoke_result_pitch_headline_low_short">唱穩開頭，完整唱完</string>
+    <string name="player_karaoke_result_fun_note">娛樂評分包含音準命中、完美保持、連擊和顫音獎勵。</string>
+    <string name="player_lyrics_offset">歌詞偏移</string>
+    <string name="player_lyrics_rows">歌詞行數</string>
+    <string name="player_lyrics_size">歌詞字號</string>
+    <string name="player_lyrics_source">歌詞來源</string>
+    <string name="player_karaoke_mode">K歌模式</string>
+    <string name="player_audio_options">播放選項</string>
+    <string name="player_karaoke_mode_enabled">目前已開啟</string>
+    <string name="player_karaoke_mode_disabled">目前已關閉</string>
+    <string name="player_karaoke_difficulty">K歌難度</string>
+    <string name="player_karaoke_mic_delay">麥克風延遲</string>
+    <string name="player_karaoke_track">評分譜</string>
+    <string name="player_karaoke_track_generate_pitch">生成評分譜</string>
+    <string name="player_karaoke_track_search">線上搜尋</string>
+    <string name="player_karaoke_track_keyword">評分譜關鍵字</string>
+    <string name="player_karaoke_track_import_file">本機導入</string>
+    <string name="player_karaoke_track_import_url">連結導入</string>
+    <string name="player_karaoke_track_sources">譜源管理</string>
+    <string name="player_karaoke_track_advanced">進階選項</string>
+    <string name="player_karaoke_track_back">返回</string>
+    <string name="player_karaoke_track_basic_pitch_tflite">Basic Pitch：%1$s</string>
+    <string name="player_karaoke_track_option_enabled">已開啟</string>
+    <string name="player_karaoke_track_option_disabled">已關閉</string>
+    <string name="player_karaoke_track_sources_hint">每行一個倉庫：owner/repo@branch 或 https://github.com/owner/repo/tree/branch</string>
+    <string name="player_karaoke_track_sources_saved">評分譜源已儲存</string>
+    <string name="player_karaoke_track_url_hint">UltraStar .txt 連結、USDB ID、USDB 詳情頁，或追加 @Cookie=...</string>
+    <string name="player_karaoke_track_clear">清除綁定</string>
+    <string name="player_karaoke_track_searching">正在搜尋評分譜...</string>
+    <string name="player_karaoke_track_not_found">未找到評分譜</string>
+    <string name="player_karaoke_track_select">選擇評分譜</string>
+    <string name="player_karaoke_track_source_login"> · 需登入</string>
+    <string name="player_karaoke_track_result_item">%1$s\n%2$s - %3$s\n%4$s</string>
+    <string name="player_karaoke_track_imported">評分譜已導入</string>
+    <string name="player_karaoke_track_import_failed">評分譜導入失敗</string>
+    <string name="player_karaoke_track_generated">輕量節奏評分譜已生成</string>
+    <string name="player_karaoke_track_generating_pitch">正在生成音高評分譜...</string>
+    <string name="player_karaoke_track_generating_pitch_message">正在本地分析目前音訊並生成帶音高的評分譜，完成前請勿關閉播放器。</string>
+    <string name="player_karaoke_track_generating_pitch_progress">%1$d%% · %2$s · %3$s</string>
+    <string name="player_karaoke_track_generation_stop">停止</string>
+    <string name="player_karaoke_track_generation_stopped">已停止生成評分譜</string>
+    <string name="player_karaoke_track_pitch_stage_prepare">準備中</string>
+    <string name="player_karaoke_track_pitch_stage_decode">解碼音訊</string>
+    <string name="player_karaoke_track_pitch_stage_analyze">分析音高</string>
+    <string name="player_karaoke_track_pitch_stage_write">寫入評分譜</string>
+    <string name="player_karaoke_track_pitch_stage_finish">收尾中</string>
+    <string name="player_karaoke_track_pitch_remaining_unknown">正在估算剩餘時間</string>
+    <string name="player_karaoke_track_pitch_remaining_seconds">剩餘約 %1$d 秒</string>
+    <string name="player_karaoke_track_pitch_remaining_minutes">剩餘約 %1$d 分 %2$d 秒</string>
+    <string name="player_karaoke_track_generated_pitch">音高評分譜已生成</string>
+    <string name="player_karaoke_track_generated_pitch_message">已套用到目前歌曲，K歌模式已開啟。</string>
+    <string name="player_karaoke_track_generate_pitch_failed">音高評分譜生成失敗</string>
+    <string name="player_karaoke_track_generate_pitch_failed_message">未生成評分譜：%1$s</string>
+    <string name="player_karaoke_track_generate_pitch_unsupported_source">目前媒體源無法直接分析音訊，可嘗試切換線路/清晰度，或使用線上搜尋、本機導入評分譜。</string>
+    <string name="player_karaoke_track_generate_failed">輕量節奏評分譜生成失敗</string>
+    <string name="player_karaoke_track_generate_no_lyrics">目前沒有可用的歌詞時間軸</string>
+    <string name="player_karaoke_track_cleared">評分譜綁定已清除</string>
+    <string name="player_karaoke_track_none">目前沒有評分譜綁定</string>
+    <string name="player_desktop_lyrics">桌面歌詞</string>
+    <string name="player_desktop_lyrics_permission">請允許顯示在其他應用程式上層，用於顯示桌面歌詞</string>
+    <string name="player_lyrics_cache">歌詞快取</string>
+    <string name="player_lyrics_cache_value">%1$d 項</string>
+    <string name="player_lyrics_cache_cleared">歌詞快取已清理</string>
+    <string name="player_lyrics_search">搜尋歌詞</string>
+    <string name="player_lyrics_reload">重搜歌詞</string>
+    <string name="player_lyrics_keyword">歌詞關鍵字</string>
+    <string name="player_lyrics_keyword_required">請輸入歌詞關鍵字</string>
+    <string name="player_lyrics_searching">正在搜尋歌詞...</string>
+    <string name="player_lyrics_not_found">未找到歌詞</string>
+    <string name="player_lyrics_loaded">已載入歌詞：%1$s</string>
+    <string name="player_lyrics_select">選擇歌詞</string>
+    <string name="player_lyrics_word">逐字</string>
+    <string name="player_lyrics_synced">逐句</string>
+    <string name="player_lyrics_plain">文字</string>
+    <string name="player_audio_badge_audio">音訊</string>
+    <string name="player_audio_badge_lyrics">歌詞</string>
+    <string name="player_audio_playlist">歌單</string>
+    <string name="player_audio_playlist_results">搜尋結果</string>
+    <string name="player_audio_playlist_search_hint">搜尋目前站源</string>
+    <string name="player_audio_playlist_search_required">請輸入搜尋關鍵字</string>
+    <string name="player_audio_playlist_search_failed">搜尋失敗</string>
+    <string name="player_audio_playlist_no_results">未找到結果</string>
+    <string name="player_audio_playlist_result_count">找到 %1$d 個結果</string>
+    <string name="player_audio_playlist_adding">正在加入 %1$s...</string>
+    <string name="player_audio_playlist_add_failed">加入失敗</string>
+    <string name="player_audio_playlist_add_empty">未找到可播放項目</string>
+    <string name="player_audio_playlist_added">已加入 %1$d 項</string>
+    <string name="player_audio_playlist_exists">已在歌單中</string>
+    <string name="player_audio_playlist_empty">歌單暫無歌曲</string>
+    <string name="player_audio_playlist_removed">已移除 %1$s</string>
+    <string name="player_audio_playlist_keep_one">歌單至少保留一首歌曲</string>
+    <string name="player_audio_playlist_switch">切換</string>
+    <string name="player_audio_playlist_create">新增</string>
+    <string name="player_audio_playlist_name_hint">歌單名稱</string>
+    <string name="player_audio_more">更多</string>
+    <string name="player_audio_background">背景</string>
+    <string name="player_audio_background_decorated_on">裝飾已開</string>
+    <string name="player_audio_background_decorated_off">裝飾已關</string>
+    <string name="player_audio_background_light_effect_on">光效已開</string>
+    <string name="player_audio_background_light_effect_off">光效已關</string>
+    <string name="player_audio_background_decorated_turn_on">打開裝飾</string>
+    <string name="player_audio_background_decorated_turn_off">關閉裝飾</string>
+    <string name="player_audio_background_random_plain">換背景</string>
+    <string name="player_audio_background_random_decoration">換裝飾</string>
+    <string name="player_audio_background_random_plain_done">已隨機生成純背景</string>
+    <string name="player_audio_background_random_decoration_done">已隨機生成背景裝飾</string>
+    <string name="player_audio_background_random_mix_done">已隨機生成背景搭配</string>
+    <string name="player_lyrics_unknown">未知</string>
+    <string name="player_lyrics_result_item">%1$s · %2$s · %3$d\n%4$s - %5$s</string>
+    <string name="player_lyrics_rows_value">%1$d 行</string>
+
+
+    <string-array name="select_lyrics_size">
+        <item>小</item>
+        <item>預設</item>
+        <item>大</item>
+        <item>特大</item>
+    </string-array>
+
+
+
+
+    <string-array name="select_lyrics_source">
+        <item>自動</item>
+        <item>本地</item>
+        <item>AMLL TTML</item>
+        <item>QQMusic QRC</item>
+        <item>網易 YRC</item>
+        <item>酷我</item>
+        <item>LRCLIB</item>
+        <item>酷狗</item>
+        <item>咪咕</item>
+    </string-array>
+
+
+
+
+    <string-array name="select_karaoke_difficulty">
+        <item>輕鬆</item>
+        <item>標準</item>
+        <item>嚴格</item>
+    </string-array>
+
+
+    <string name="player_audio_badge_queue">佇列</string>
+    <string name="player_audio_repeat">循環</string>
 </resources>

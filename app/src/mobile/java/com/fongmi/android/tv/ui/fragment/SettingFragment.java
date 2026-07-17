@@ -1,5 +1,6 @@
 package com.fongmi.android.tv.ui.fragment;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,10 +30,12 @@ import com.fongmi.android.tv.setting.Setting;
 import com.fongmi.android.tv.ui.activity.HomeActivity;
 import com.fongmi.android.tv.ui.base.BaseFragment;
 import com.fongmi.android.tv.ui.dialog.AboutDialog;
+import com.fongmi.android.tv.ui.dialog.ChoiceDialog;
 import com.fongmi.android.tv.ui.dialog.ConfigDialog;
 import com.fongmi.android.tv.ui.dialog.HistoryDialog;
 import com.fongmi.android.tv.ui.dialog.LiveDialog;
 import com.fongmi.android.tv.ui.dialog.RestoreDialog;
+import com.fongmi.android.tv.ui.dialog.BackupProgressDialog;
 import com.fongmi.android.tv.ui.dialog.SiteDialog;
 import com.fongmi.android.tv.ui.dialog.ThemeDialog;
 import com.fongmi.android.tv.utils.AppVersion;
@@ -42,7 +45,6 @@ import com.fongmi.android.tv.utils.PermissionUtil;
 import com.fongmi.android.tv.utils.ResUtil;
 import com.github.catvod.bean.Doh;
 import com.github.catvod.net.OkHttp;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -152,7 +154,9 @@ public class SettingFragment extends BaseFragment implements ConfigListener, Sit
 
     @Override
     public void setConfig(Config config) {
-        if (config.getUrl().startsWith("file")) {
+        if (config == null) return;
+        String url = config.getUrl();
+        if (!TextUtils.isEmpty(url) && url.startsWith("file")) {
             requireView().post(() -> PermissionUtil.requestFile(this, allGranted -> load(config)));
         } else {
             load(config);
@@ -298,38 +302,34 @@ public class SettingFragment extends BaseFragment implements ConfigListener, Sit
     }
 
     private void setSize(View view) {
-        new MaterialAlertDialogBuilder(requireActivity()).setTitle(R.string.setting_size).setNegativeButton(R.string.dialog_negative, null).setSingleChoiceItems(size, PlayerSetting.getSize(), (dialog, which) -> {
+        ChoiceDialog.showSingle(this, R.string.setting_size, size, PlayerSetting.getSize(), which -> {
             mBinding.sizeText.setText(size[which]);
             PlayerSetting.putSize(which);
             RefreshEvent.size();
-            dialog.dismiss();
-        }).show();
+        });
     }
 
     private void setLanguage(View view) {
-        new MaterialAlertDialogBuilder(requireActivity()).setTitle(R.string.setting_language).setNegativeButton(R.string.dialog_negative, null).setSingleChoiceItems(language, Setting.getLanguageIndex(), (dialog, which) -> {
+        ChoiceDialog.showSingle(this, R.string.setting_language, language, Setting.getLanguageIndex(), which -> {
             if (which != Setting.getLanguageIndex()) {
                 Setting.putLanguageIndex(which);
                 RefreshEvent.language();
             }
-            dialog.dismiss();
-        }).show();
+        });
     }
 
     private void setUiScale(View view) {
-        new MaterialAlertDialogBuilder(requireActivity()).setTitle(R.string.setting_ui_scale).setNegativeButton(R.string.dialog_negative, null).setSingleChoiceItems(uiScale, Setting.getUiScaleIndex(), (dialog, which) -> {
+        ChoiceDialog.showSingle(this, R.string.setting_ui_scale, uiScale, Setting.getUiScaleIndex(), which -> {
             mBinding.uiScaleText.setText(uiScale[which]);
             Setting.putUiScaleIndex(which);
-            dialog.dismiss();
             requireActivity().recreate();
-        }).show();
+        });
     }
 
     private void setDoh(View view) {
-        new MaterialAlertDialogBuilder(requireActivity()).setTitle(R.string.setting_doh).setNegativeButton(R.string.dialog_negative, null).setSingleChoiceItems(getDohList(), getDohIndex(), (dialog, which) -> {
+        ChoiceDialog.showSingle(this, R.string.setting_doh, getDohList(), getDohIndex(), which -> {
             setDoh(VodConfig.get().getDoh().get(which));
-            dialog.dismiss();
-        }).show();
+        });
     }
 
     private void setDoh(Doh doh) {
@@ -348,17 +348,22 @@ public class SettingFragment extends BaseFragment implements ConfigListener, Sit
     }
 
     private void onBackup(View view) {
-        PermissionUtil.requestFile(this, allGranted -> AppDatabase.backup(new Callback() {
+        PermissionUtil.requestFile(this, allGranted -> {
+            BackupProgressDialog progress = BackupProgressDialog.open(getParentFragmentManager(), "备份应用数据");
+            AppDatabase.backup(new Callback() {
             @Override
             public void success() {
+                progress.finish();
                 Notify.show(R.string.backup_success);
             }
 
             @Override
             public void error() {
+                progress.finish();
                 Notify.show(R.string.backup_fail);
             }
-        }));
+            }, progress::update);
+        });
     }
 
     private void onRestore(View view) {
@@ -367,7 +372,6 @@ public class SettingFragment extends BaseFragment implements ConfigListener, Sit
             public void success() {
                 Notify.show(R.string.restore_success);
                 setOtherText();
-                initConfig();
             }
 
             @Override

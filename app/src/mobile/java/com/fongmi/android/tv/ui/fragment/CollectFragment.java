@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.viewbinding.ViewBinding;
 
+import com.fongmi.android.tv.Product;
 import com.fongmi.android.tv.R;
 import com.fongmi.android.tv.api.config.VodConfig;
 import com.fongmi.android.tv.bean.Collect;
@@ -27,16 +28,17 @@ import com.fongmi.android.tv.bean.Result;
 import com.fongmi.android.tv.bean.Site;
 import com.fongmi.android.tv.bean.Vod;
 import com.fongmi.android.tv.databinding.FragmentCollectBinding;
+import com.fongmi.android.tv.model.SearchProgress;
 import com.fongmi.android.tv.model.SiteViewModel;
 import com.fongmi.android.tv.setting.Setting;
 import com.fongmi.android.tv.setting.SiteHealthStore;
-import com.fongmi.android.tv.setting.SiteBlockSetting;
 import com.fongmi.android.tv.ui.activity.FolderActivity;
 import com.fongmi.android.tv.ui.activity.VideoActivity;
 import com.fongmi.android.tv.ui.adapter.CollectAdapter;
 import com.fongmi.android.tv.ui.adapter.SearchAdapter;
 import com.fongmi.android.tv.ui.base.BaseFragment;
 import com.fongmi.android.tv.ui.custom.CustomScroller;
+import com.fongmi.android.tv.utils.MobileWindow;
 import com.fongmi.android.tv.utils.ResUtil;
 
 import java.util.ArrayList;
@@ -46,7 +48,6 @@ public class CollectFragment extends BaseFragment implements MenuProvider, Colle
 
     private static final int GRID_ITEM_MARGIN_DP = 4;
     private static final int GRID_TOP_PADDING_DP = 8;
-    private static final int RESULT_END_PADDING_DP = 8;
 
     private FragmentCollectBinding mBinding;
     private CollectAdapter mCollectAdapter;
@@ -54,6 +55,8 @@ public class CollectFragment extends BaseFragment implements MenuProvider, Colle
     private CustomScroller mScroller;
     private SiteViewModel mViewModel;
     private List<Site> mSites;
+    private final List<Collect> mCollects = new ArrayList<>();
+    private final List<Vod> mAllResults = new ArrayList<>();
     private int collectWidth;
 
     public static CollectFragment newInstance(String keyword) {
@@ -134,11 +137,13 @@ public class CollectFragment extends BaseFragment implements MenuProvider, Colle
         mBinding.recycler.addOnScrollListener(mScroller);
         mBinding.recycler.setAdapter(mSearchAdapter = new SearchAdapter(this));
         setResultLayout(false);
+        mBinding.recycler.post(() -> setResultLayout(false));
     }
 
     private void setViewModel() {
         mViewModel = new ViewModelProvider(this).get(SiteViewModel.class).init();
         mViewModel.getSearch().observe(this, this::setCollect);
+        mViewModel.getSearchProgress().observe(this, this::setSearchProgress);
         mViewModel.getResult().observe(this, this::setSearch);
     }
 
@@ -147,7 +152,6 @@ public class CollectFragment extends BaseFragment implements MenuProvider, Colle
         mSites = new ArrayList<>();
         for (Site site : VodConfig.get().getSites()) {
             if (!site.isSearchable()) continue;
-            if (SiteBlockSetting.isBlocked(site)) continue;
             if (!TextUtils.isEmpty(siteKey) && !site.getKey().equals(siteKey)) continue;
             mSites.add(site);
         }
@@ -170,7 +174,10 @@ public class CollectFragment extends BaseFragment implements MenuProvider, Colle
 
     private void search() {
         if (mSites.isEmpty()) return;
-        mCollectAdapter.setItems(List.of(Collect.all()), () -> mViewModel.searchContent(mSites, getKeyword(), false));
+        mCollects.clear();
+        mAllResults.clear();
+        mCollects.add(Collect.all());
+        mCollectAdapter.setItems(new ArrayList<>(mCollects), () -> mViewModel.searchContent(mSites, getKeyword(), false));
     }
 
     private int getCount() {
@@ -181,19 +188,38 @@ public class CollectFragment extends BaseFragment implements MenuProvider, Colle
         return getCount() == 2;
     }
 
+    private int getSpanCount() {
+        if (!isGrid()) return 1;
+        if (!MobileWindow.isWide(requireActivity())) return 2;
+        int column = Product.getColumn(requireActivity());
+        int targetWidth = Product.getSpec(requireActivity(), column)[0];
+        int available = getResultWidth() - getResultPadding();
+        int span = targetWidth > 0 ? available / targetWidth : 2;
+        return Math.max(2, Math.min(column, span));
+    }
+
+    private int getResultWidth() {
+        int width = mBinding.recycler.getWidth();
+        return width > 0 ? width : ResUtil.getScreenWidth(requireActivity()) - collectWidth;
+    }
+
+    private int getResultPadding() {
+        return mBinding.recycler.getPaddingStart() + mBinding.recycler.getPaddingEnd();
+    }
+
     private int[] getGridSize() {
-        int span = getCount();
+        int span = getSpanCount();
         int margin = ResUtil.dp2px(GRID_ITEM_MARGIN_DP);
-        int space = ResUtil.dp2px(RESULT_END_PADDING_DP) + margin * 2 * span;
-        int width = (ResUtil.getScreenWidth(requireActivity()) - collectWidth - space) / span;
+        int space = getResultPadding() + margin * 2 * span;
+        int width = (getResultWidth() - space) / span;
         width = Math.max(ResUtil.dp2px(96), width);
         return new int[]{width, (int) (width / 0.75f), margin};
     }
 
     private void setResultLayout(boolean scrollTop) {
         setWidth();
-        int count = getCount();
-        ((GridLayoutManager) (mBinding.recycler.getLayoutManager())).setSpanCount(count);
+        int span = getSpanCount();
+        ((GridLayoutManager) (mBinding.recycler.getLayoutManager())).setSpanCount(span);
         setResultPadding();
         mSearchAdapter.setGrid(isGrid(), getGridSize());
         if (scrollTop) mBinding.recycler.scrollToPosition(0);
@@ -212,9 +238,16 @@ public class CollectFragment extends BaseFragment implements MenuProvider, Colle
 
     private void setCollect(Result result) {
         if (result == null || result.getList().isEmpty()) return;
-        if (mCollectAdapter.getPosition() == 0) mSearchAdapter.addAll(result.getList());
-        mCollectAdapter.add(Collect.create(result.getList()));
-        mCollectAdapter.add(result.getList());
+        List<Vod> items = new ArrayList<>(result.getList());
+        mAllResults.addAll(items);
+        mCollects.get(0).getList().addAll(items);
+        mCollects.add(Collect.create(items));
+        mCollectAdapter.setItems(new ArrayList<>(mCollects));
+        if (mCollectAdapter.getPosition() == 0) mSearchAdapter.setItems(new ArrayList<>(mAllResults));
+    }
+
+    private void setSearchProgress(SearchProgress progress) {
+        if (progress != null) mCollectAdapter.setProgress(progress.current(), progress.total());
     }
 
     private void setSearch(Result result) {
@@ -222,7 +255,7 @@ public class CollectFragment extends BaseFragment implements MenuProvider, Colle
         mScroller.endLoading(result);
         boolean same = !result.getList().isEmpty() && mCollectAdapter.getActivated().getSite().equals(result.getVod().getSite());
         if (same) mCollectAdapter.getActivated().getList().addAll(result.getList());
-        if (same) mSearchAdapter.addAll(result.getList());
+        if (same) mSearchAdapter.setItems(new ArrayList<>(mCollectAdapter.getActivated().getList()));
     }
 
     @Override
