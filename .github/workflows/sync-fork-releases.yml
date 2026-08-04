@@ -1,4 +1,4 @@
-name: Sync Fork & Releases
+name: Sync Releases
 
 on:
   workflow_dispatch:
@@ -11,12 +11,12 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout repository
+      - name: 检出仓库
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Sync branches and tags
+      - name: 同步标签
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -25,22 +25,16 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git remote add upstream https://github.com/fish2018/webhtv.git
           git fetch upstream --prune --tags
-          for branch in main develop; do
-            if git rev-parse upstream/$branch >/dev/null 2>&1; then
-              echo "Syncing branch: $branch"
-              git push --force-with-lease origin refs/remotes/upstream/$branch:refs/heads/$branch
-            fi
-          done
-          git push --force-with-lease origin --tags
+          git push --force origin --tags
 
-      - name: Fetch upstream releases
+      - name: 获取上游发布版本
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           gh api repos/fish2018/webhtv/releases --paginate --jq 'sort_by(.published_at)' > releases.json
 
-      - name: Process each release
+      - name: 处理每个发布版本
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -50,7 +44,6 @@ jobs:
             TAG=$(echo "$release" | jq -r '.tag_name')
             TITLE=$(echo "$release" | jq -r '.name // .tag_name')
             BODY=$(echo "$release" | jq -r '.body // ""')
-            TARGET=$(echo "$release" | jq -r '.target_commitish // .tag_name')
             PRE=$(echo "$release" | jq -r '.prerelease')
             DRAFT=$(echo "$release" | jq -r '.draft')
 
@@ -65,7 +58,7 @@ jobs:
               --repo "$TARGET_REPO" \
               --title "$TITLE" \
               --notes-file body.txt \
-              --target "$TARGET" \
+              --target "$TAG" \
               $([ "$PRE" = "true" ] && echo "--prerelease") \
               $([ "$DRAFT" = "true" ] && echo "--draft")
 
