@@ -1,0 +1,73 @@
+name: Sync Fork & Releases
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  sync-all-releases:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: 同步分支和标签
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git remote add upstream https://github.com/fish2018/webhtv.git
+          git fetch upstream --prune --tags
+          for branch in main develop; do
+            if git rev-parse upstream/$branch >/dev/null 2>&1; then
+              echo "Syncing branch: $branch"
+              git push --force-with-lease origin refs/remotes/upstream/$branch:refs/heads/$branch
+            fi
+          done
+          git push --force-with-lease origin --tags
+
+      - name: 获取上游发布版本
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh api repos/fish2018/webhtv/releases --paginate --jq 'sort_by(.published_at)' > releases.json
+
+      - name: 处理每个发布版本
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          TARGET_REPO="${{ github.repository }}"
+          jq -c '.[]' releases.json | while IFS= read -r release; do
+            TAG=$(echo "$release" | jq -r '.tag_name')
+            TITLE=$(echo "$release" | jq -r '.name // .tag_name')
+            BODY=$(echo "$release" | jq -r '.body // ""')
+            TARGET=$(echo "$release" | jq -r '.target_commitish // .tag_name')
+            PRE=$(echo "$release" | jq -r '.prerelease')
+            DRAFT=$(echo "$release" | jq -r '.draft')
+
+            if gh release view "$TAG" --repo "$TARGET_REPO" &>/dev/null; then
+              echo "Release $TAG already exists, skipping"
+              continue
+            fi
+
+            echo "Creating release: $TAG"
+            echo "$BODY" > body.txt
+            gh release create "$TAG" \
+              --repo "$TARGET_REPO" \
+              --title "$TITLE" \
+              --notes-file body.txt \
+              --target "$TARGET" \
+              $([ "$PRE" = "true" ] && echo "--prerelease") \
+              $([ "$DRAFT" = "true" ] && echo "--draft")
+
+            mkdir -p assets
+            gh release download "$TAG" --repo fish2018/webhtv --dir assets || true
+            if [ "$(ls -A assets 2>/dev/null)" ]; then
+              gh release upload "$TAG" assets/* --repo "$TARGET_REPO" --clobber
+            fi
+            rm -rf assets body.txt
+          done
