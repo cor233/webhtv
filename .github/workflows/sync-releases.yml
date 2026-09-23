@@ -15,7 +15,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          SOURCE_REPO="fish2018/webhtv"
+          SOURCE_REPO="webhtv/webhtv"
           PAGE=1
           PER_PAGE=100
           RELEASES_JSON=""
